@@ -14,7 +14,7 @@
          "POST"
       ],
       "AllowedOrigins":[
-         "http://localhost:3000"
+         "*"
       ],
       "ExposeHeaders":[
          
