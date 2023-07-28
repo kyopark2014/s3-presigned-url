@@ -1,7 +1,10 @@
 # Amazon S3 Presigned Url을 이용하여 파일 업로드하기
 
+API Gateway - Lambda 조합으로 S3에 파일을 업로드시에 Lambda Payload 크기 제한으로 5MB 이하 파일만 S3에 보낼 수 있습니다. 따라서 여기에서는 Presigned URL을 이용하여 S3에 파일을 업로드하는 방법에 대해 설명합니다.
 
 ## S3에 대한 CORS 설정
+
+S3에 파일을 전송하기 위해서는 CORS 설정을 하여야 합니다.
 
 ```java
 [
