@@ -139,3 +139,4 @@ $(document).ready(function () {
 
 [S3 presigned URLs with SAM, auth and sample frontend](https://github.com/aws-samples/amazon-s3-presigned-urls-aws-sam/tree/master)
 
+[How to add CORS to an S3 bucket in AWS CDK](https://bobbyhadz.com/blog/add-cors-s3-bucket-aws-cdk)
