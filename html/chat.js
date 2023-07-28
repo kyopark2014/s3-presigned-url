@@ -179,6 +179,12 @@ attachFile.addEventListener('click', function(){
             console.log('filename: ' + filename);
             console.log('ext: ' + ext);
 
+            if(ext == 'pdf') {
+                contentType = 'application/pdf'           
+            }
+
+            requestToGetPresignedUrl(filename, contentType);
+
         /*    const url = 'upload';
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("POST", url, true);         
@@ -345,7 +351,7 @@ function sendRequestForSummary(object) {
     xhr.send(blob);            
 }
 
-function requestToGetPresignedUrl(object) {
+function requestToGetPresignedUrl(filename, contentType) {
     const uri = "getUploadUrl";
     const xhr = new XMLHttpRequest();
 
@@ -360,10 +366,8 @@ function requestToGetPresignedUrl(object) {
     };
 
     var requestObj = {
-        "user-id": userId,
-        "request-id": uuidv4(),
-        "type": "document",
-        "body": object
+        "filename": filename,
+        "ext": contentType,
     }
     console.log("request: " + JSON.stringify(requestObj));
 

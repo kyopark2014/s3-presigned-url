@@ -1,5 +1,4 @@
 const aws = require('aws-sdk');
-const {v4: uuidv4} = require('uuid');
 
 const s3 = new aws.S3();
 
@@ -11,43 +10,9 @@ const URL_EXPIRATION_SECONDS = 300
 exports.handler = async (event, context) => {
     //console.log('## ENVIRONMENT VARIABLES: ' + JSON.stringify(process.env));
     //console.log('## EVENT: ' + JSON.stringify(event));
-    
-    //const body = Buffer.from(event["body"], "base64");
-    // console.log('body: ' + body);
-    const header = event['multiValueHeaders'];
-    console.log('header: ' + JSON.stringify(header));
-            
-    let contentType = 'application/pdf';
-    if(header['Content-Type']) {
-        contentType = String(header['Content-Type']);
-    }
-    else if(header['content-type']) {
-        contentType = String(header['content-type']);
-    } 
-    console.log('contentType = '+contentType); 
-
-    let contentDisposition="";
-    if(header['Content-Disposition']) {
-        contentDisposition = String(header['Content-Disposition']);  
-    } 
-    console.log('disposition = '+contentDisposition);
-    
-    let filename = "";
-    const uuid = uuidv4();   
-
-    if(contentType == 'application/pdf') {
-        filename = uuid+'.pdf';
-    }
-    else if(contentType == 'text/plain') {
-        filename = uuid+'.txt';
-    }
-    else if(contentType == 'text/csv') {
-        filename = uuid+'.csv';
-    }
-    else {
-        filename = uuid+'.unknown';
-    }
-    console.log('filename = '+filename);
+        
+    let filename = event['filename'];
+    let contentType = event['contentType'];
 
     const s3Params = {
         Bucket: bucketName,
