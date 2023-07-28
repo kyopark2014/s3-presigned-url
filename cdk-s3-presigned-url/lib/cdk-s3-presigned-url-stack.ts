@@ -164,10 +164,10 @@ export class CdkS3PresignedUrlStack extends cdk.Stack {
     });   
 
 
-    
+
     // POST method - getUploadUrl
     const getUploadUrl = api.root.addResource("getUploadUrl");
-    getUploadUrl.addMethod('POST', new apiGateway.LambdaIntegration(lambdaUpload, {
+    getUploadUrl.addMethod('POST', new apiGateway.LambdaIntegration(lambdaGetUploadUrl, {
       passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
       credentialsRole: role,
       integrationResponses: [{
