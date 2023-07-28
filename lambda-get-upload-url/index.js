@@ -1,17 +1,19 @@
 const aws = require('aws-sdk');
 const {v4: uuidv4} = require('uuid');
 
-const s3 = new aws.S3({ apiVersion: '2006-03-01' });
+const s3 = new aws.S3();
 
 const bucketName = process.env.bucketName;
 const s3_prefix = process.env.s3_prefix;
 
+const URL_EXPIRATION_SECONDS = 300
+
 exports.handler = async (event, context) => {
     //console.log('## ENVIRONMENT VARIABLES: ' + JSON.stringify(process.env));
-    //console.log('## EVENT: ' + JSON.stringify(event))
+    //console.log('## EVENT: ' + JSON.stringify(event));
     
-    const body = Buffer.from(event["body"], "base64");
-    console.log('body: ' + body);
+    //const body = Buffer.from(event["body"], "base64");
+    // console.log('body: ' + body);
     const header = event['multiValueHeaders'];
     console.log('header: ' + JSON.stringify(header));
             
@@ -46,34 +48,26 @@ exports.handler = async (event, context) => {
         filename = uuid+'.unknown';
     }
     console.log('filename = '+filename);
-    
-    try {
-        const destparams = {
-            Bucket: bucketName, 
-            Key: s3_prefix+'/'+filename,
-            Body: body,
-            ContentType: contentType
-        };
-        
-      //  console.log('destparams: ' + JSON.stringify(destparams));
-        const {putResult} = await s3.putObject(destparams).promise(); 
 
-        console.log('### finish upload: ' + uuid);
-    } catch (error) {
-        console.log(error);
-        return;
-    } 
-    
-    const fileInfo = {
-        Id: uuid,
-        Bucket: bucketName, 
-        Key: filename,
-    }; 
-    console.log('file info: ' + JSON.stringify(fileInfo));
-    
+    const s3Params = {
+        Bucket: bucketName,
+        Key: s3_prefix+'/'+filename,
+        Expires: URL_EXPIRATION_SECONDS,
+        ContentType: contentType,
+    }
+
+    const uploadURL = await s3.getSignedUrlPromise('putObject', s3Params);
+    console.log('uploadURL: ', uploadURL);
+
     const response = {
         statusCode: 200,
-        body: JSON.stringify(fileInfo)
+        uploadURL: JSON.stringify({
+            Bucket: bucketName,
+            Key: s3_prefix+'/'+filename,
+            Expires: URL_EXPIRATION_SECONDS,
+            ContentType: contentType,
+            UploadURL: uploadURL
+        })
     };
     return response;
 };

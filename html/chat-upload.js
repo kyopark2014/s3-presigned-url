@@ -173,46 +173,12 @@ attachFile.addEventListener('click', function(){
             var input = this;
             var url_file = $(this).val();
             var ext = url_file.substring(url_file.lastIndexOf('.') + 1).toLowerCase();
-            var filename = url_file.substring(url_file.lastIndexOf('\\') + 1).toLowerCase();
 
             console.log('url: ' + url_file);
-            console.log('filename: ' + filename);
             console.log('ext: ' + ext);
 
-        /*    const url = 'upload';
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open("POST", url, true);         
-
-            if(ext == 'pdf') {
-                contentType = 'application/pdf'           
-            }
-            xmlHttp.setRequestHeader('Content-Type', contentType); 
-
+            const url = 'upload';
             let formData = new FormData();
-            formData.append("attachFile" , input.files[0]);
-            console.log('uploading file info: ', formData.get("attachFile"));
-
-            xmlHttp.onreadystatechange = function() {
-                if (xmlHttp.readyState == XMLHttpRequest.DONE && xmlHttp.status == 200 ) {
-                    console.log(xmlHttp.responseText);
-
-                    response = JSON.parse(xmlHttp.responseText);
-                    console.log('response: ' + JSON.stringify(response));
-                    console.log('presigned url: ' + response.UploadURL);
-                    
-
-                    sendRequestForSummary(response.Key);
-                }
-                else if(xmlHttp.status != 200) {
-                    console.log('status' + xmlHttp.status);
-                    alert("Try again! The request was failed. Note the size of file should be less than 5MB");
-                }
-            };
-
-            xmlHttp.send(formData); 
-            console.log(xmlHttp.responseText); */
-
-        /*    let formData = new FormData();
             formData.append("attachFile" , input.files[0]);
             console.log('uploading file info: ', formData.get("attachFile"));
                 
@@ -284,7 +250,7 @@ attachFile.addEventListener('click', function(){
                     xmlHttp.send(reader.result);                     
                     console.log(xmlHttp.responseText);  
                 };                
-            }      */                 
+            }                       
         });
     });
        
@@ -344,31 +310,3 @@ function sendRequestForSummary(object) {
 
     xhr.send(blob);            
 }
-
-function requestToGetPresignedUrl(object) {
-    const uri = "getUploadUrl";
-    const xhr = new XMLHttpRequest();
-
-    xhr.open("POST", uri, true);
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            response = JSON.parse(xhr.responseText);
-            console.log("response: " + JSON.stringify(response));
-            
-            addReceivedMessage(response.msg)
-        }
-    };
-
-    var requestObj = {
-        "user-id": userId,
-        "request-id": uuidv4(),
-        "type": "document",
-        "body": object
-    }
-    console.log("request: " + JSON.stringify(requestObj));
-
-    var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
-
-    xhr.send(blob);            
-}
-

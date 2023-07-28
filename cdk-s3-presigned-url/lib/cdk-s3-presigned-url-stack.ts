@@ -84,6 +84,22 @@ export class CdkS3PresignedUrlStack extends cdk.Stack {
     });
     s3Bucket.grantReadWrite(lambdaUpload);
 
+    // Lambda - Get Upload URL
+    const lambdaGetUploadUrl = new lambda.Function(this, `lambda-get-upload-url-for-${projectName}`, {
+      runtime: lambda.Runtime.NODEJS_16_X, 
+      functionName: `lambda-get-upload-url-for-${projectName}`,
+      code: lambda.Code.fromAsset("../lambda-get-upload-url"), 
+      handler: "index.handler", 
+      timeout: cdk.Duration.seconds(10),
+      logRetention: logs.RetentionDays.ONE_DAY,
+      environment: {
+        bucketName: s3Bucket.bucketName,
+        s3_prefix:  s3_prefix
+      }      
+    });
+    s3Bucket.grantReadWrite(lambdaGetUploadUrl);
+
+
     // role
     const role = new iam.Role(this, `api-role-for-${projectName}`, {
       roleName: `api-role-for-${projectName}`,
@@ -146,6 +162,37 @@ export class CdkS3PresignedUrlStack extends cdk.Stack {
       allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
       viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     });   
+
+
+    
+    // POST method - getUploadUrl
+    const getUploadUrl = api.root.addResource("getUploadUrl");
+    getUploadUrl.addMethod('POST', new apiGateway.LambdaIntegration(lambdaUpload, {
+      passthroughBehavior: apiGateway.PassthroughBehavior.WHEN_NO_TEMPLATES,
+      credentialsRole: role,
+      integrationResponses: [{
+        statusCode: '200',
+      }], 
+      proxy:false, 
+    }), {
+      methodResponses: [  
+        {
+          statusCode: '200',
+          responseModels: {
+            'application/json': apiGateway.Model.EMPTY_MODEL,
+          }, 
+        }
+      ]
+    }); 
+
+    // cloudfront setting for api gateway    
+    distribution.addBehavior("/getUploadUrl", new origins.RestApiOrigin(api), {
+      cachePolicy: cloudFront.CachePolicy.CACHING_DISABLED,
+      allowedMethods: cloudFront.AllowedMethods.ALLOW_ALL,  
+      viewerProtocolPolicy: cloudFront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+    });   
+
+    
     
     new cdk.CfnOutput(this, `WebUrl-for-${projectName}`, {
       value: 'https://'+distribution.domainName+'/chat.html',      
