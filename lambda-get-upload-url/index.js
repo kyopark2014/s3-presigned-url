@@ -26,7 +26,7 @@ exports.handler = async (event, context) => {
 
     const response = {
         statusCode: 200,
-        uploadURL: JSON.stringify({
+        body: JSON.stringify({
             Bucket: bucketName,
             Key: s3_prefix+'/'+filename,
             Expires: URL_EXPIRATION_SECONDS,
