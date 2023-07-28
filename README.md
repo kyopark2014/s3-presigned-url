@@ -26,6 +26,29 @@ S3에 파일을 전송하기 위해서는 CORS 설정을 하여야 합니다.
 ]
 ```
 
+따라서, CDK로 S3 생성시에 [cdk-s3-presigned-url-stack.ts](./cdk-s3-presigned-url-stack.ts)와 같이 CORS를 설정합니다
+
+```java
+const s3Bucket = new s3.Bucket(this, `storage-${projectName}`, {
+    bucketName: bucketName,
+    blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+    autoDeleteObjects: true,
+    publicReadAccess: false,
+    versioned: false,
+    cors: [
+        {
+            allowedHeaders: ['*'],
+            allowedMethods: [
+                s3.HttpMethods.POST,
+                s3.HttpMethods.PUT,
+            ],
+            allowedOrigins: ['*'],
+        },
+    ],
+});
+```
+
 ## Presigned URL 얻어오기
 
 [Lambda](./lambda-get-upload-url/index.js)에서는 getSignedUrlPromise()을 통해 presigned url을 얻어옵니다. 이때, client에서 전달받은 업로드할 파일에 대한 filename과 content type을 이용합니다.
