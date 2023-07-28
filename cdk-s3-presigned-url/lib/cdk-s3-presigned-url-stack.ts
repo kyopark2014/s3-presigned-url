@@ -31,6 +31,16 @@ export class CdkS3PresignedUrlStack extends cdk.Stack {
       autoDeleteObjects: true,
       publicReadAccess: false,
       versioned: false,
+      cors: [
+        {
+          allowedHeaders: ['*'],
+          allowedMethods: [
+            s3.HttpMethods.POST,
+            s3.HttpMethods.PUT,
+          ],
+          allowedOrigins: ['*'],
+        },
+      ],
     });
     if(debug) {
       new cdk.CfnOutput(this, 'bucketName', {
@@ -48,7 +58,7 @@ export class CdkS3PresignedUrlStack extends cdk.Stack {
     }
 
     // copy web application files into s3 bucket
-    new s3Deploy.BucketDeployment(this, `upload-HTML-for-${projectName}`, {
+  /*  new s3Deploy.BucketDeployment(this, `upload-HTML-for-${projectName}`, {
       sources: [s3Deploy.Source.asset("../html")],
       destinationBucket: s3Bucket,
     });
@@ -197,6 +207,6 @@ export class CdkS3PresignedUrlStack extends cdk.Stack {
     new cdk.CfnOutput(this, `WebUrl-for-${projectName}`, {
       value: 'https://'+distribution.domainName+'/chat.html',      
       description: 'The web url of request for chat',
-    });
+    }); */
   }
 }

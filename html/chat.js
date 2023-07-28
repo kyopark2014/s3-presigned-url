@@ -182,6 +182,10 @@ attachFile.addEventListener('click', function(){
             if(ext == 'pdf') {
                 contentType = 'application/pdf'           
             }
+            else if(ext == 'txt')
+                contentType = 'text/plain'
+            else if(ext == 'csv')
+                contentType = 'text/csv'
 
             const uri = "getUploadUrl";
             const xhr = new XMLHttpRequest();
@@ -197,12 +201,12 @@ attachFile.addEventListener('click', function(){
                     // upload the file
                     const body = JSON.parse(response.body);
                     console.log('body: ', body);
-                    
+
                     const UploadURL = body.UploadURL;                    
                     console.log("UploadURL: ", UploadURL);
 
                     var xmlHttp = new XMLHttpRequest();
-                    xmlHttp.open("PUT", url, true);       
+                    xmlHttp.open("PUT", UploadURL, true);       
 
                     let formData = new FormData();
                     formData.append("attachFile" , input.files[0]);
@@ -211,12 +215,9 @@ attachFile.addEventListener('click', function(){
                     xmlHttp.onreadystatechange = function() {
                         if (xmlHttp.readyState == XMLHttpRequest.DONE && xmlHttp.status == 200 ) {
                             console.log(xmlHttp.responseText);
-        
-                            response = JSON.parse(xmlHttp.responseText);
-                            console.log('response: ' + JSON.stringify(response));
-                                    
+                                           
                             // summary for the upload file
-                            sendRequestForSummary(response.Key);
+                            // sendRequestForSummary(response.Key);
                         }
                         else if(xmlHttp.status != 200) {
                             console.log('status' + xmlHttp.status);
@@ -399,31 +400,6 @@ function sendRequestForSummary(object) {
         "request-id": uuidv4(),
         "type": "document",
         "body": object
-    }
-    console.log("request: " + JSON.stringify(requestObj));
-
-    var blob = new Blob([JSON.stringify(requestObj)], {type: 'application/json'});
-
-    xhr.send(blob);            
-}
-
-function requestToGetPresignedUrl(filename, contentType) {
-    const uri = "getUploadUrl";
-    const xhr = new XMLHttpRequest();
-
-    xhr.open("POST", uri, true);
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            response = JSON.parse(xhr.responseText);
-            console.log("response: " + JSON.stringify(response));
-            
-            addReceivedMessage(response.msg)
-        }
-    };
-
-    var requestObj = {
-        "filename": filename,
-        "ext": contentType,
     }
     console.log("request: " + JSON.stringify(requestObj));
 
